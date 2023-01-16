@@ -8,7 +8,7 @@ import { auth, db , query, collection, onSnapshot, where, getDocs, updateDoc, do
 
 export default function Profile({navigation}) {
 
-  const [amount, setAmount] = useState(parseInt(100000));
+  const [amount, setAmount] = useState();
   const [time, setTime] = useState();
 
   const [isAdmin, setIsAdmin] = useState(() => {
@@ -83,7 +83,18 @@ function winner(){
   return (
     <View style={{marginTop: 50}}>
       <Text style={{marginVertical: 10, fontSize: 18, marginLeft: 100, fontWeight: 'bold'}}>Lottery CountDown</Text>
-       {/* dx */}
+       {/* <CountDown
+        size={30}
+        until={20}
+        onFinish={() => winner()}
+        digitStyle={{backgroundColor: '#FFF', borderWidth: 2, borderColor: '#1CC625'}}
+        digitTxtStyle={{color: '#1CC625'}}
+        timeLabelStyle={{color: 'red', fontWeight: 'bold'}}
+        separatorStyle={{color: '#1CC625'}}
+        timeToShow={['H', 'M', 'S']}
+        timeLabels={{m: null, s: null}}
+        showSeparator
+      /> */}
 
 
      {isAdmin ?

@@ -22,6 +22,7 @@ export default function RegisterScreen({navigation}) {
                     LastName: lastName,
                     role: "user",
                     AccountBalance: 0,
+                    
                     user_id: user.uid,
                     created: serverTimestamp(),
                 })
