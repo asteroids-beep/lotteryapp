@@ -10,6 +10,7 @@ import { Feather } from '@expo/vector-icons';
 import LoginScreen from './components/LoginScreen';
 import HomeScreen from './components/HomeScreen';
 import Notification from './components/Notification';
+import ShortsScreen from './components/ShortsScreen';
 import RegisterScreen from './components/RegisterScreen';
 import Profile from './components/Profile'
 
@@ -78,6 +79,28 @@ const TabNavigator = () => {
           },
           ]
       }}/>
+
+    <Tab.Screen name="Notifications" component={ ShortsScreen } options={{
+           tabBarshowLabel: "false",
+           headerShown: "true",
+           tabBarIcon: ({color, size}) => (
+            <Ionicons name="notifications" size={size} color={color} />
+           ),
+          tabBarStyle:[{
+          position:'absolute',
+          bottom:15,
+          left:10,
+          right:10,
+          elevation:0,
+          backgroundColor:'#ffffff',
+          borderRadius:15,
+          height:70,
+         ...styles.shadow,
+          },
+          ]
+      }}/>
+
+     
     
     <Tab.Screen name="Scanner" component={Notification} options={{
            tabBarshowLabel: "false",

@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import {StyleSheet, View, Text,TouchableOpacity, ActivityIndicator, TextInput, Modal, FlatList, SafeAreaView, ScrollView, ImageBackground, Image } from 'react-native'
+import {StyleSheet, View, Text,TouchableOpacity, ActivityIndicator, TextInput, Modal, FlatList, SafeAreaView, ScrollView, ImageBackground, Image, Button } from 'react-native'
 import { AntDesign } from '@expo/vector-icons';
-import { Entypo } from '@expo/vector-icons';
-import CountDown from 'react-native-countdown-component';
-import { auth, db , query, collection, onSnapshot, where, getDocs, updateDoc, doc } from '../firebase/config'
+import { globalStyles } from '../styles/global';
+import { auth, db , query, collection, onSnapshot, where, getDocs, updateDoc, doc, addDoc } from '../firebase/config'
 
 
 export default function Profile({navigation}) {
-
-  const [amount, setAmount] = useState();
-  const [time, setTime] = useState();
 
   const [isAdmin, setIsAdmin] = useState(() => {
     if (auth.currentUser.email  === "admin@gmail.com") {
@@ -17,8 +13,43 @@ export default function Profile({navigation}) {
     }
     return false;
     
+
 });
-  const [modalVisible, setModalVisible] = useState(false);
+
+
+const [count, setCount] = useState(3);
+const [intervalId, setIntervalId] = useState(null);
+const [isRunning, setIsRunning] = useState(false);
+
+
+const startTimer = () => {
+  setIsRunning(true);
+  const id = setInterval(() => {
+    setCount(count - 1);
+   
+  }, 1000);
+  setIntervalId(id);
+  if (count === 1) {
+    winner()
+  }
+};
+
+
+
+const stopTimer = () => {
+  clearInterval(intervalId);
+  setIsRunning(false);
+  setCount(3);
+};
+
+const pauseTimer = () => {
+  clearInterval(intervalId);
+  setIsRunning(false);
+};
+
+
+
+const [modalVisible, setModalVisible] = useState(false);
   
 function winner(){
   
@@ -70,46 +101,117 @@ function winner(){
             })
 
             updateDoc(doc(db, 'User', id), {
-              AccountBalance: parseInt(user.AccountBalance) + parseInt(amount)
+              AccountBalance: parseInt(user.AccountBalance) + parseInt(100000)
               
+          })
+
+          addDoc(collection(db, 'Notifications' ), {
+        
+            Email: chosen.Email,
+            Details: "You are our lucky lottery winner of 100,000"
+  
           })
     }) 
   }) 
   }) 
+  
 }
+
+    //retrieve all players
+
+    const [Tickets, setTickets] = useState([]);  
+    useEffect(() =>{
+      const ticket = query(collection(db, "TicketNumber"))
+      onSnapshot(ticket, (querySnapshot) =>{
+        const tickets = [];
+        setTickets([]);
+    
+        querySnapshot.forEach((doc) => {
+          tickets.push(doc.data())
+          setTickets( prevState => [ ...prevState, { ...doc.data(), key: doc.id } ] );
+          
+        })
+      })
+    } , []);
 
 
   
   return (
     <View style={{marginTop: 50}}>
       <Text style={{marginVertical: 10, fontSize: 18, marginLeft: 100, fontWeight: 'bold'}}>Lottery CountDown</Text>
-       {/* <CountDown
-        size={30}
-        until={20}
-        onFinish={() => winner()}
-        digitStyle={{backgroundColor: '#FFF', borderWidth: 2, borderColor: '#1CC625'}}
-        digitTxtStyle={{color: '#1CC625'}}
-        timeLabelStyle={{color: 'red', fontWeight: 'bold'}}
-        separatorStyle={{color: '#1CC625'}}
-        timeToShow={['H', 'M', 'S']}
-        timeLabels={{m: null, s: null}}
-        showSeparator
-      /> */}
-
-
+     
      {isAdmin ?
       <View style={[{marginTop: 20}]}>
-        
-               <TextInput
-                    placeholder='Set Time'
-                    style={styles.input}
-                    value={time}
-                    keyboardType="numeric"
-                    onChangeText= {setTime}
-                />
 
-      </View>
-      :null}
+      
+        
+      <View>
+      <Text style={{padding:25, fontSize: 150, marginLeft: 100}}>{count}</Text>
+      {isRunning ? (
+        <View style={[styles.buttonContainer, {marginLeft: 5}]}>
+        <TouchableOpacity
+        onPress={pauseTimer} 
+        style={[styles.button, {width: 240, marginLeft: 50,  backgroundColor: "lightblue"}]}
+        >
+        <Text
+        style={[styles.buttonText, styles.buttonLinetext, {}]}
+        >
+        Pause
+        </Text>
+        </TouchableOpacity>
+        </View>
+      ) : (
+        <View style={[styles.buttonContainer, {marginLeft: 5}]}>
+          <TouchableOpacity
+          onPress={startTimer} 
+          style={[styles.button, {width: 240, marginLeft: 50,  backgroundColor: "lightgreen"}]}
+          >
+          <Text
+          style={[styles.buttonText, styles.buttonLinetext, {}]}
+          >
+          Start
+          </Text>
+          </TouchableOpacity>
+        </View>
+
+              
+      )}
+      <View style={[styles.buttonContainer, {marginLeft: 35, marginTop: -70}]}>
+        <TouchableOpacity
+        onPress={stopTimer} 
+        style={[styles.button, {width: 240, marginLeft: 20, backgroundColor: "crimson"}]}
+        >
+        <Text
+        style={[styles.buttonText, styles.buttonLinetext, {}]}
+        >
+        Stop
+        </Text>
+        </TouchableOpacity>
+        </View>
+
+    </View>
+    </View>
+      :
+      <View>
+        <Text style={{padding:25, fontSize: 150, marginLeft: 100}}>{count}</Text>
+        <Text style={{fontSize:25,marginLeft: 40, marginTop: -20}}>Players</Text>
+        <ScrollView style={{backgroundColor: "#fff", padding: 20, width: 300,height:250, margin: 30, borderRadius: 4}}>
+         
+
+          <FlatList
+            data={Tickets}
+            renderItem={({ item }) => (
+              
+              <View style={[{ borderWidth:1, borderColor:"lightgreen", borderRadius: 8, padding: 20, marginBottom: 10, marginHorizontal: 10} ]}>
+              
+              <Text>{item.Email}</Text>
+              
+             </View>
+            )}/>
+
+        </ScrollView>
+
+      </View>}
 
   <View style={{flex:1, display: "flex"}}>
       <Modal visible={modalVisible}

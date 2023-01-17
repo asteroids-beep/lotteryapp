@@ -11,6 +11,8 @@ import { SelectList } from 'react-native-dropdown-select-list';
 
 //Identify user
 function HomeScreen ({navigation})  {
+
+
  
       const [isAdmin, setIsAdmin] = useState(() => {
         if (auth.currentUser.email  === "admin@gmail.com") {
@@ -116,7 +118,7 @@ function HomeScreen ({navigation})  {
           user = doc.data();
         })
         
-        if((user.AccountBalance >= purchase) && (setPurchase > 0)){
+        if((user.AccountBalance >= purchase) && (purchase > 0)){
         updateDoc(doc(db, 'User', id), {
           AccountBalance: parseInt(user.AccountBalance) - parseInt(purchase)
           
@@ -178,6 +180,7 @@ const data = [
 const price = [
   {key: 1500, value: 1500},
   {key: 500, value: 500},
+  {key: 800, value: 800}
   
 ]
 
@@ -265,27 +268,38 @@ useEffect(() =>{
            </View>
         )}/>
        
+       </View>
+
+      
       </View>
 
       <Modal visible={modalOpen}
        animationType = "slide"
-       transparent= "true">
-      <ScrollView style={[styles.container,{borderRadius: 4} ]}>
- 
-                <View style={{backgroundColor: '#fff', width: 300, borderRadius: 8, paddingVertical: 30}}>
-                <TouchableOpacity
-                    style={{ position:'absolute', top:0, left:5}}
-                    onPress={() => setModalOpen(false)}
+       transparent={true}
+       style={{marginTop: 80,  elevation: 5}}
+       >
+      <ScrollView style={[styles.container,{borderRadius: 4, marginTop: 50} ]}>
+        
+        <ScrollView style={{backgroundColor: '#fff',marginTop: 15, width: 300,height:530, borderRadius: 8,  marginLeft: 10}}>
+        
+          
+          <TouchableOpacity
+           style={{ position:'absolute', top:15, left:260}}
+           onPress={() => setModalOpen(false)}
 
-                    >
-                    <AntDesign name="close" size={22} color="#000"  />
-                </TouchableOpacity>
-                <Text style={styles.title}>Tickets</Text>
-                <Text style={styles.sub_title}>Company Objectives</Text>
-                <View style={{width: 240, marginLeft: 30}}>
-                <SelectList data={data} setSelected={setSelected} />
+           >
+             <AntDesign name="close" size={22} color="black"  />
+        </TouchableOpacity>
+                
+                
+                
+                <Text style={[styles.title,{marginLeft: 80, marginTop: 50}]}>New Game</Text>
+                <Text style={styles.sub_title}>To Earn Even More</Text>
+
+                <View style={[ {width: 240, marginLeft: 30, marginTop: 30}]}>
+                <SelectList data={data} setSelected={setSelected} inputStyles />
                 </View>
-
+                
                 <TextInput
                     placeholder='Lottery Name'
                     style={styles.input}
@@ -293,39 +307,41 @@ useEffect(() =>{
                     onChangeText={setLottery}
                 />
 
-               <TextInput
+                <TextInput
                     placeholder='Ticket Price'
                     style={styles.input}
                     value={ticketprice}
-                    onChangeText={setTicketPrice}
                     keyboardType="numeric"
+                    onChangeText={setTicketPrice}
                 />
 
                <TextInput
-                    placeholder='Time (12Hrs)'
+                    placeholder='Time (12:00 am)'
                     style={styles.input}
                     value={time}
                     onChangeText={setTime}
                 />
-                </View>
 
-                    <View style={styles.buttonContainer}>
+              <View style={[styles.buttonContainer, {marginLeft: 5}]}>
                     <TouchableOpacity
-                    onPress={game}
-                    style={styles.button}
+                    onPress={() => game()} 
+                    style={[styles.button, {width: 240, marginLeft: 20}]}
                     >
                     <Text
-                    style={[styles.buttonText, styles.buttonLinetext]}
+                    style={[styles.buttonText, styles.buttonLinetext, {marginLeft: -10}]}
                     >
-                    Post Ticket
+                    Post
                     </Text>
                     </TouchableOpacity>
                     </View>
+
+                </ScrollView>
+
+                   
             
              
         </ScrollView>
-       </Modal>   
-      </View>
+       </Modal>
 
         <TouchableOpacity
             style={globalStyles.floatingButton}
